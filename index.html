@@ -21,8 +21,72 @@
   '.fade-in{opacity:0;transform:translateY(30px);animation:fadeUp 1s ease forwards}' +
   '@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}' +
   '.payhip-buy-button{display:inline-block;padding:18px 52px;font-family:"Playfair Display",serif;font-size:19px;font-weight:700;text-decoration:none;border-radius:14px;transition:all .4s ease;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#0c1929;border:none;cursor:pointer;letter-spacing:.3px;box-shadow:0 8px 30px rgba(56,189,248,.25)}' +
-  '.payhip-buy-button:hover{transform:translateY(-3px);box-shadow:0 15px 45px rgba(56,189,248,.35),0 0 60px rgba(56,189,248,.15)}';
+  '.payhip-buy-button:hover{transform:translateY(-3px);box-shadow:0 15px 45px rgba(56,189,248,.35),0 0 60px rgba(56,189,248,.15)}' +
+  '.coupon-banner{background:linear-gradient(90deg,#0ea5e9,#38bdf8 50%,#f59e0b);padding:14px 20px;text-align:center;position:relative;z-index:10}' +
+  '.coupon-code-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(15,23,42,.85);border:1.5px dashed #fff;border-radius:10px;padding:6px 16px;font-family:"Playfair Display",serif;font-weight:800;font-size:17px;letter-spacing:1.5px;color:#fff;margin:0 4px}' +
+  '.countdown-unit{display:flex;flex-direction:column;align-items:center;min-width:52px}' +
+  '.countdown-num{font-family:"Playfair Display",serif;font-weight:800;font-size:22px;line-height:1;color:#0c1929;background:#fff;border-radius:8px;padding:6px 10px;min-width:40px;text-align:center}' +
+  '.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#0c1929;margin-top:5px;font-weight:600}' +
+  '.price-strike{color:var(--muted);text-decoration:line-through;font-size:26px;font-weight:600;margin-right:10px;font-family:"Playfair Display",serif;}' +
+  '.coupon-mini{display:inline-flex;align-items:center;gap:6px;background:var(--accent2-soft);border:1px dashed #f59e0b;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700;color:#fcd34d;letter-spacing:.5px;margin-top:14px}';
   document.head.appendChild(s);
+})();
+</script>
+
+<script>
+(function(){
+  // Countdown target: September 18, 2026, 23:59:59 local time
+  var target = new Date("2026-09-18T23:59:59").getTime();
+
+  function pad(n){ return n < 10 ? "0" + n : "" + n; }
+
+  function setAll(selector, value){
+    var els = document.querySelectorAll(selector);
+    for(var i = 0; i < els.length; i++){ els[i].textContent = value; }
+  }
+
+  function updateCountdown(){
+    var now = new Date().getTime();
+    var diff = target - now;
+
+    if(diff <= 0){
+      setAll('[data-cd="days"]', "00");
+      setAll('[data-cd="hours"]', "00");
+      setAll('[data-cd="mins"]', "00");
+      setAll('[data-cd="secs"]', "00");
+      clearInterval(window.__countdownInterval);
+      return;
+    }
+
+    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    var secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    setAll('[data-cd="days"]', pad(days));
+    setAll('[data-cd="hours"]', pad(hours));
+    setAll('[data-cd="mins"]', pad(mins));
+    setAll('[data-cd="secs"]', pad(secs));
+  }
+
+  updateCountdown();
+  window.__countdownInterval = setInterval(updateCountdown, 1000);
+
+  // Click-to-copy coupon code
+  var codeEl = document.getElementById('coupon-code-text');
+  if(codeEl){
+    codeEl.style.cursor = 'pointer';
+    codeEl.title = 'Click to copy';
+    codeEl.addEventListener('click', function(){
+      var text = "TALEMAGIC";
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text);
+      }
+      var original = codeEl.innerHTML;
+      codeEl.innerHTML = "Copied!";
+      setTimeout(function(){ codeEl.innerHTML = original; }, 1200);
+    });
+  }
 })();
 </script>
 
@@ -47,6 +111,23 @@
       <p style="font-size:clamp(17px,2.2vw,21px);color:var(--muted);max-width:640px;margin:0 auto;line-height:1.75;font-weight:400;">
         A complete step-by-step system for creating enchanting vintage animated videos that captivate audiences and bring your original fairytale visions to life.
       </p>
+
+      <div style="margin-top:36px;display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:18px;padding:16px 28px;border-radius:14px;background:linear-gradient(90deg,#0ea5e9,#38bdf8 50%,#f59e0b);max-width:100%;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;font-family:'Playfair Display',serif;font-weight:700;font-size:14px;color:#0c1929;white-space:nowrap;">
+          <span>Use code</span>
+          <span class="coupon-code-pill" id="coupon-code-text" style="font-size:14px;padding:5px 14px;cursor:pointer;" title="Click to copy">TALEMAGIC</span>
+          <span>for <strong>$7 OFF</strong> — now <strong>$20</strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;white-space:nowrap;">
+          <span style="font-size:12px;font-weight:700;color:#0c1929;text-transform:uppercase;letter-spacing:.08em;">Ends in</span>
+          <div style="display:flex;gap:8px;">
+            <div class="countdown-unit"><div class="countdown-num" data-cd="days">--</div><div class="countdown-label">Days</div></div>
+            <div class="countdown-unit"><div class="countdown-num" data-cd="hours">--</div><div class="countdown-label">Hrs</div></div>
+            <div class="countdown-unit"><div class="countdown-num" data-cd="mins">--</div><div class="countdown-label">Min</div></div>
+            <div class="countdown-unit"><div class="countdown-num" data-cd="secs">--</div><div class="countdown-label">Sec</div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr;gap:56px;align-items:center;" class="fade-in" id="hero-grid">
@@ -105,8 +186,11 @@
         
         <div style="text-align:center;padding:32px;border-radius:18px;background:linear-gradient(145deg,var(--card),rgba(30,41,59,.6));border:1px solid var(--border);">
           <div style="font-size:14px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:500;">One-Time Investment</div>
-          <div style="font-size:54px;font-weight:800;margin-bottom:24px;" class="amber-gradient">$27</div>
+          <div style="margin-bottom:24px;">
+            <span class="price-strike">$27</span><span style="font-size:54px;font-weight:800;" class="amber-gradient">$20</span>
+          </div>
           <a href="https://payhip.com/b/LW6JF" class="payhip-buy-button" data-theme="blue" data-product="LW6JF">Get Instant Access</a>
+          <div><span class="coupon-mini">Code TALEMAGIC — $7 off</span></div>
           <div style="font-size:13px;color:var(--muted);margin-top:16px;">Instant digital delivery · Secure checkout</div>
         </div>
       </div>
@@ -240,8 +324,11 @@
       <div style="position:absolute;top:-50%;left:-20%;width:140%;height:200%;background:radial-gradient(ellipse at center,rgba(56,189,248,.08),transparent 60%);"></div>
       <div style="position:relative;">
         <div style="font-size:14px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:500;">Complete Digital Guide</div>
-        <div style="font-size:56px;font-weight:800;margin-bottom:10px;" class="amber-gradient">$27</div>
-        <div style="font-size:14.5px;color:var(--muted);margin-bottom:32px;">One-time payment · Lifetime access · Instant delivery</div>
+        <div style="margin-bottom:10px;">
+          <span class="price-strike">$27</span><span style="font-size:56px;font-weight:800;" class="amber-gradient">$20</span>
+        </div>
+        <div style="font-size:14.5px;color:var(--muted);margin-bottom:20px;">One-time payment · Lifetime access · Instant delivery</div>
+        <div style="margin-bottom:28px;"><span class="coupon-mini">Use code TALEMAGIC at checkout — $7 off, ends 9/18</span></div>
         <a href="https://payhip.com/b/LW6JF" class="payhip-buy-button" data-theme="blue" data-product="LW6JF">Get the Complete Guide</a>
         <div style="margin-top:24px;font-size:13px;color:var(--muted);">
           <span style="display:inline-flex;align-items:center;gap:6px;">
@@ -260,7 +347,7 @@
     <div style="font-size:24px;font-weight:600;margin-bottom:10px;" class="sky-gradient" style="font-family:'Playfair Display',serif;">Once Upon a Tale</div>
     <div style="font-size:14px;color:var(--muted);font-style:italic;">Create magic. Tell stories. Inspire wonder.</div>
     <div style="margin-top:24px;font-size:12px;color:#64748b;">
-      All characters and content are original creations. Results may vary based on generation quality.
+      All characters and content are original creations. Results may vary based on generation quality. Coupon code TALEMAGIC valid through September 18, 2026.
     </div>
   </div>
 </div>
